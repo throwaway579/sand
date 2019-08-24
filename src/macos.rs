@@ -66,12 +66,9 @@ pub fn send_file(file: &mut File, stream: &mut TcpStream) -> io::Result<()> {
     let mut offset: off_t = 0;
 
     loop {
-        // loop until the file has been sent and handle WouldBlock and Interrupted errors
-
         match try_sendfile(file.as_raw_fd(), stream.as_raw_fd(), offset, 0) {
             Err((ref e, sent)) if check_error(e.kind()) => {
                 if e.kind() == ErrorKind::Interrupted && sent == 0 {
-                    // special case
                     return Err(e.to_owned());
                 }
 

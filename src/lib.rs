@@ -5,7 +5,7 @@ and every other `std`-platform using a fallback.
 
 # Implementations
 
-All implementation support a maximum file length of [`off_t::max_value()`].
+All native implementation support a maximum file length of [`off_t::max_value()`].
 
 All implementations handle `WouldBlock` and `Interrupted` errors.
 
@@ -61,6 +61,9 @@ and if the files become to large for the native solutions a fallback is used.
 [`BufReader`]: https://doc.rust-lang.org/stable/std/io/struct.BufReader.html
 */
 
+#![allow(unused_imports)]
+#![deny(missing_docs)]
+
 //todo: Remove libc
 
 extern crate libc;
@@ -73,8 +76,7 @@ mod imp;
 #[path = "freebsd.rs"]
 mod imp;
 
-#[cfg(target_os = "macos")]
-#[cfg(all(target_os = "ios", feature = "ios-sendfile"))]
+#[cfg(any(target_os = "macos", all(target_os = "ios", feature = "ios-sendfile")))]
 #[path = "macos.rs"]
 mod imp;
 
@@ -109,7 +111,23 @@ use std::net::TcpStream;
 ///
 /// If the file has a length of `0`, this function returns successfully without doing additional work.
 ///
-/// [module documentation]: mod.snedfile.html
+/// This function does not guarantee respecting the file offset, if it already has been changed by using `Seek` or `Read`.
+///
+/// # Example
+///
+/// ```
+/// use snedfile::send_file;
+/// # use std::io;
+/// # use std::fs::File;
+/// # use std::net::TcpStream;
+///
+/// // somewhere in server code
+/// fn serve_static(mut file: File, mut stream: TcpStream) -> io::Result<()> {
+///     send_file(&mut file, &mut stream) // everything you need to do
+/// }
+/// ```
+///
+/// [module documentation]: index.html
 #[inline]
 pub fn send_file(file: &mut File, stream: &mut TcpStream) -> io::Result<()> {
     imp::send_file(file, stream)
@@ -132,6 +150,23 @@ pub fn send_file(file: &mut File, stream: &mut TcpStream) -> io::Result<()> {
 /// The behaviour is not specified (but not undefined) if the offset goes beyond the end of the file.
 ///
 /// No kinds of errors are handled.
+///
+/// # Example
+///
+/// ```
+/// use snedfile::send_exact;
+/// # use std::io;
+/// # use std::fs::File;
+/// # use std::net::TcpStream;
+///
+/// fn try_serve_static(mut file: File, mut stream: TcpStream) -> io::Result<u64> {
+///     let len = file.metadata()?.len();
+///
+///     // the same as the example from `send_file`,
+///     // but with less automatic error handling
+///     send_exact(&mut file, &mut stream, len, 0)
+/// }
+/// ```
 #[inline]
 pub fn send_exact(
     file: &mut File,

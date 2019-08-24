@@ -1,5 +1,3 @@
-#![allow(unused_imports)]
-
 mod sendfile {
     use libc::sendfile;
     use libc::{c_int, off_t, size_t};
