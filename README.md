@@ -1,12 +1,12 @@
 # snedfile - Rust cross-platform sendfile() abstractions
 
-Natively supported using `sendfile()` are Linux, Fuchsia, FreeBSD and DragonFlyBSD,
+Natively supported using `sendfile()` are Linux, Android, MacOS, iOS, FreeBSD and DragonFlyBSD,
 and every other `std`-platform using a fallback.
 
 # Usage
 
 This library is designed to make transmitting files as easy as possible.
-When you have a file and a TCP stream, all you have to do is
+If you have a file and a TCP stream, all you have to do is
 
 ```rust
 use snedfile::send_file;
