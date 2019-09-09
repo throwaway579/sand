@@ -61,12 +61,13 @@ and if the files become to large for the native solutions a fallback is used.
 [`BufReader`]: https://doc.rust-lang.org/stable/std/io/struct.BufReader.html
 */
 
-#![allow(unused_imports)]
 #![deny(missing_docs)]
 
 //todo: Remove libc
 
 extern crate libc;
+#[cfg(test)]
+extern crate tempfile;
 
 #[cfg(any(target_os = "linux", target_os = "android"))]
 #[path = "linux.rs"]
@@ -98,6 +99,8 @@ compile_error!("Only one `fallback-*` feature can enabled");
 use std::fs::File;
 use std::io;
 use std::net::TcpStream;
+#[cfg(test)]
+use std::{env, process};
 
 /// Sends the entire contents of a file to a TCP stream.
 ///

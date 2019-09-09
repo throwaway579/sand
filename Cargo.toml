@@ -16,6 +16,7 @@ libc = "0.2"
 
 [dev-dependencies]
 tcp-test = "0.1"
+tempfile = "3.1"
 
 [features]
 default = ["fallback-bufreader", "ios-sendfile"]

@@ -89,3 +89,55 @@ pub fn copy_to_end(file: &mut File, stream: &mut TcpStream, offset: u64) -> io::
         }
     }
 }
+
+#[cfg(test)]
+mod tests{
+    use std::io::{Read, Write, SeekFrom, Seek};
+
+    #[test]
+    fn send_file_imp(){
+        let mut file = tempfile::tempfile().unwrap();
+        let (mut a, mut b) = tcp_test::channel();
+        let data = b"dR#QaIw,";
+
+        file.write_all(data).unwrap();
+
+        file.seek(SeekFrom::Start(0)).unwrap();
+
+        super::send_file_imp(&mut file, &mut a, 8).unwrap();
+
+        let mut buf = [0; 8];
+        b.read_exact(&mut buf).unwrap();
+        assert_eq!(data, &buf);
+    }
+
+    #[test]
+    fn send_file_exact(){
+        let mut file = tempfile::tempfile().unwrap();
+        let (mut a, mut b) = tcp_test::channel();
+        let data = b"dR#QaIw,";
+
+        file.write_all(data).unwrap();
+
+        super::send_exact(&mut file, &mut a, 8, 1).unwrap();
+
+        let mut buf = [0; 7];
+        b.read_exact(&mut buf).unwrap();
+        assert_eq!(&data[1..], &buf);
+    }
+
+    #[test]
+    fn copy_to_end() {
+        let mut file = tempfile::tempfile().unwrap();
+        let (mut a, mut b) = tcp_test::channel();
+        let data = b"Ht9!Kwk}";
+
+        file.write_all(data).unwrap();
+
+        super::copy_to_end(&mut file, &mut a, 3).unwrap();
+
+        let mut buf = [0; 5];
+        b.read_exact(&mut buf).unwrap();
+        assert_eq!(&data[3..], &buf);
+    }
+}
