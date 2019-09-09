@@ -43,4 +43,7 @@ script:
   - cargo fmt -- --check
   - cargo clippy
   - test
+  - test --no-default-features
+  - test --no-default-features --features fallback-buf
+  - test --no-default-features --features fallback-bufreder
   - test --features large-files

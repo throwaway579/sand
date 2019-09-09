@@ -3,6 +3,7 @@ mod sendfile {
     use libc::{c_int, off_t, size_t};
     use std::io::{self, Error};
 
+    #[allow(dead_code)]
     pub const MAX_LENGTH: u64 = off_t::max_value() as u64;
     pub const MAX_CHUNK: u64 = 0x7ffff000; // according to the Linux docs, 0x7ffff000 is the maximum length for one sendfile()
 
