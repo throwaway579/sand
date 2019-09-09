@@ -1,9 +1,8 @@
 #![allow(unused_imports)]
 
 mod sendfile {
-    use libc::sendfile;
-    use libc::{c_int, off_t, size_t};
-    use std::io::{Error, ErrorKind};
+    use libc::{c_int, off_t};
+    use std::io::Error;
     use std::ptr;
 
     pub fn try_sendfile(
@@ -13,7 +12,7 @@ mod sendfile {
         mut length: off_t,
     ) -> Result<(), (Error, off_t)> {
         if unsafe {
-            sendfile(
+            libc::sendfile(
                 file,
                 stream,
                 offset,

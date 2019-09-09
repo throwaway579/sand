@@ -99,8 +99,6 @@ compile_error!("Only one `fallback-*` feature can enabled");
 use std::fs::File;
 use std::io;
 use std::net::TcpStream;
-#[cfg(test)]
-use std::{env, process};
 
 /// Sends the entire contents of a file to a TCP stream.
 ///

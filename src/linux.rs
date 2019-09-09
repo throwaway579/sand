@@ -1,9 +1,10 @@
-mod sendfile {
-    use libc::sendfile;
-    use libc::{c_int, off_t, size_t};
-    use std::io::{self, Error};
+#![allow(unused_imports)]
 
-    #[allow(dead_code)]
+mod sendfile {
+    use libc::{c_int, off_t, size_t};
+    use std::io::Error;
+
+    #[cfg(feature = "large-files")]
     pub const MAX_LENGTH: u64 = off_t::max_value() as u64;
     pub const MAX_CHUNK: u64 = 0x7ffff000; // according to the Linux docs, 0x7ffff000 is the maximum length for one sendfile()
 
@@ -16,7 +17,7 @@ mod sendfile {
     ) -> Result<off_t, (Error, off_t)> {
         let inital_offset = offset;
 
-        match unsafe { sendfile(stream, file, &mut offset as *mut off_t, length as size_t) } {
+        match unsafe { libc::sendfile(stream, file, &mut offset as *mut off_t, length as size_t) } {
             -1 => Err((Error::last_os_error(), offset - inital_offset)),
             length => Ok(length as off_t), // a negative value is only returned in error cases
         }
@@ -31,7 +32,7 @@ use libc::off_t;
 use std::fs::File;
 use std::io::{self, Error, ErrorKind};
 use std::net::TcpStream;
-use std::os::unix::io::{AsRawFd, RawFd};
+use std::os::unix::io::AsRawFd;
 
 #[cfg(not(feature = "large-files"))]
 pub fn send_file(file: &mut File, stream: &mut TcpStream) -> io::Result<()> {

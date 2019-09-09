@@ -1,3 +1,4 @@
+#![allow(unused_imports)]
 #![allow(dead_code)]
 
 use std::fs::File;
@@ -91,11 +92,11 @@ pub fn copy_to_end(file: &mut File, stream: &mut TcpStream, offset: u64) -> io::
 }
 
 #[cfg(test)]
-mod tests{
-    use std::io::{Read, Write, SeekFrom, Seek};
+mod tests {
+    use std::io::{Read, Seek, SeekFrom, Write};
 
     #[test]
-    fn send_file_imp(){
+    fn send_file_imp() {
         let mut file = tempfile::tempfile().unwrap();
         let (mut a, mut b) = tcp_test::channel();
         let data = b"dR#QaIw,";
@@ -112,7 +113,7 @@ mod tests{
     }
 
     #[test]
-    fn send_file_exact(){
+    fn send_file_exact() {
         let mut file = tempfile::tempfile().unwrap();
         let (mut a, mut b) = tcp_test::channel();
         let data = b"dR#QaIw,";
