@@ -15,7 +15,7 @@ keywords = ["sendfile", "wrapper", "cross-platform", "system call"]
 libc = "0.2"
 
 [dev-dependencies]
-tcp-test = "=0.0.1"
+tcp-test = "0.1"
 
 [features]
 default = ["fallback-bufreader", "ios-sendfile"]

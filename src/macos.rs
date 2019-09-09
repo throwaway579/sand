@@ -18,7 +18,7 @@ mod sendfile {
                 stream,
                 offset,
                 &mut length as *mut off_t,
-                ptr::null(),
+                ptr::null_mut(),
                 0,
             )
         } == -1
@@ -48,15 +48,21 @@ pub fn send_file(file: &mut File, stream: &mut TcpStream) -> io::Result<()> {
         // loop until the file has been sent and handle WouldBlock and Interrupted errors
 
         match try_sendfile(file.as_raw_fd(), stream.as_raw_fd(), offset, 0) {
-            Err((ref e, sent)) if check_error(e.kind()) => {
-                if e.kind() == ErrorKind::Interrupted && sent == 0 {
-                    // special case
-                    return Err(e.to_owned());
-                }
+            // using match guards is not possible because we return at the special case below
+            // and `Error` does not implement a way to convert `&Error` back to `Error`
+            Ok(()) => return Ok(()),
+            Err((e, sent)) => {
+                if check_error(e.kind()) {
+                    if e.kind() == ErrorKind::Interrupted && sent == 0 {
+                        // special case
+                        return Err(e);
+                    }
 
-                offset += sent;
+                    offset += sent;
+                } else {
+                    return Err(e);
+                }
             }
-            other => return other.map_err(|(e, _)| e),
         };
     }
 }
@@ -67,23 +73,27 @@ pub fn send_file(file: &mut File, stream: &mut TcpStream) -> io::Result<()> {
 
     loop {
         match try_sendfile(file.as_raw_fd(), stream.as_raw_fd(), offset, 0) {
-            Err((ref e, sent)) if check_error(e.kind()) => {
-                if e.kind() == ErrorKind::Interrupted && sent == 0 {
-                    return Err(e.to_owned());
-                }
+            Ok(()) => return Ok(()),
+            Err((e, sent)) => {
+                if check_error(e.kind()) {
+                    if e.kind() == ErrorKind::Interrupted && sent == 0 {
+                        return Err(e);
+                    }
 
-                let (new_offset, overflow) = offset.overflowing_add(sent);
+                    let (new_offset, overflow) = offset.overflowing_add(sent);
 
-                if overflow {
-                    let offset = offset as u64 + sent as u64;
+                    if overflow {
+                        let offset = offset as u64 + sent as u64;
 
-                    fallback::copy_to_end(file, stream, offset)?;
+                        fallback::copy_to_end(file, stream, offset)?;
+                    } else {
+                        // continue with the updated offset
+                        offset = new_offset;
+                    }
                 } else {
-                    // continue with the updated offset
-                    offset = new_offset;
+                    return Err(e);
                 }
             }
-            other => return other.map_err(|(e, _)| e),
         };
     }
 }
