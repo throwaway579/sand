@@ -27,19 +27,20 @@ install:
   - rustup toolchain install "stable-$target"
   - rustup toolchain install "beta-$target"
   - rustup toolchain install "nightly-$target"
+  - function test() {
+    set -e
+    target="${1}";
+    shift;
+    rustup run "stable-$target" cargo test "$@";
+    rustup run "stable-$target" cargo test --release "$@";
+    rustup run "beta-$target" cargo test "$@";
+    rustup run "beta-$target" cargo test --release "$@";
+    rustup run "nightly-$target" cargo test "$@";
+    rustup run "nightly-$target" cargo test --release "$@";
+    }
 
 script:
   - cargo fmt -- --check
   - cargo clippy
-  - rustup run "stable-$target" cargo test
-  - rustup run "stable-$target" cargo test --release
-  - rustup run "stable-$target" cargo test --features large-files
-  - rustup run "stable-$target" cargo test --features large-files --release
-  - rustup run "beta-$target" cargo test
-  - rustup run "beta-$target" cargo test --release
-  - rustup run "beta-$target" cargo test --features large-files
-  - rustup run "beta-$target" cargo test --features large-files --release
-  - rustup run "nightly-$target" cargo test
-  - rustup run "nightly-$target" cargo test --release
-  - rustup run "nightly-$target" cargo test --features large-files
-  - rustup run "nightly-$target" cargo test --features large-files --release
+  - test
+  - test --features large-files
