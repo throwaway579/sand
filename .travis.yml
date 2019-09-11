@@ -28,15 +28,15 @@ install:
   - rustup toolchain install "beta-$target"
   - rustup toolchain install "nightly-$target"
   - function test() {
-    set -e
-    target="${1}";
-    shift;
-    rustup run "stable-$target" cargo test "$@";
-    rustup run "stable-$target" cargo test --release "$@";
-    rustup run "beta-$target" cargo test "$@";
-    rustup run "beta-$target" cargo test --release "$@";
-    rustup run "nightly-$target" cargo test "$@";
-    rustup run "nightly-$target" cargo test --release "$@";
+      set -e
+      target="$1";
+      shift;
+      rustup run "stable-$target" cargo test "$@";
+      rustup run "stable-$target" cargo test --release "$@";
+      rustup run "beta-$target" cargo test "$@";
+      rustup run "beta-$target" cargo test --release "$@";
+      rustup run "nightly-$target" cargo test "$@";
+      rustup run "nightly-$target" cargo test --release "$@";
     }
 
 script:

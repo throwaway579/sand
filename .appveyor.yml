@@ -13,17 +13,36 @@ install:
   - set PATH=%PATH%;%USERPROFILE%\.cargo\bin
   - rustup component add rustfmt
   - rustup component add clippy
-  - rustup toolchain install "beta-%target%"
-  - rustup toolchain install "nightly-%target%"
+  - rustup toolchain install beta
+  - rustup toolchain install nightly
+  - ps: |
+      Function test() {
+        rustup run stable cargo test $args 2>&1 | %{ "$_" }
+        if ($LastExitCode -ne 0) { $host.SetShouldExit($LastExitCode)  }
+        rustup run stable cargo test --release $args 2>&1 | %{ "$_" }
+        if ($LastExitCode -ne 0) { $host.SetShouldExit($LastExitCode)  }
+
+        rustup run beta cargo test $args 2>&1 | %{ "$_" }
+        if ($LastExitCode -ne 0) { $host.SetShouldExit($LastExitCode)  }
+        rustup run beta cargo test --release $args 2>&1 | %{ "$_" }
+        if ($LastExitCode -ne 0) { $host.SetShouldExit($LastExitCode)  }
+
+        rustup run nightly cargo test $args 2>&1 | %{ "$_" }
+        if ($LastExitCode -ne 0) { $host.SetShouldExit($LastExitCode)  }
+        rustup run nightly cargo test --release $args 2>&1 | %{ "$_" }
+        if ($LastExitCode -ne 0) { $host.SetShouldExit($LastExitCode)  }
+      }
 
 build: false
 
 test_script:
   - cargo fmt -- --check
   - cargo clippy
-  - rustup run "stable-%target%" cargo test
-  - rustup run "stable-%target%" cargo test --release
-  - rustup run "beta-%target%" cargo test
-  - rustup run "beta-%target%" cargo test --release
-  - rustup run "nightly-%target%" cargo test
-  - rustup run "nightly-%target%" cargo test --release
+  - test
+  - test --features large-files
+  - test --no-default-features
+  - test --no-default-features --features large-files
+  - test --no-default-features --features fallback-buf
+  - test --no-default-features --features fallback-buf,large-files
+  - test --no-default-features --features fallback-bufreader
+  - test --no-default-features --features fallback-bufreader,large-files
