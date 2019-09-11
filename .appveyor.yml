@@ -39,11 +39,12 @@ build: false
 test_script:
   - cargo fmt -- --check
   - cargo clippy
-  - Test
-  - Test --features large-files
-  - Test --no-default-features
-  - Test --no-default-features --features large-files
-  - Test --no-default-features --features fallback-buf
-  - Test --no-default-features --features fallback-buf,large-files
-  - Test --no-default-features --features fallback-bufreader
-  - Test --no-default-features --features fallback-bufreader,large-files
+  - ps: |
+      Test
+      Test --features large-files
+      Test --no-default-features
+      Test --no-default-features --features large-files
+      Test --no-default-features --features fallback-buf
+      Test --no-default-features --features fallback-buf,large-files
+      Test --no-default-features --features fallback-bufreader
+      Test --no-default-features --features fallback-bufreader,large-files
