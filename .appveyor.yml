@@ -16,7 +16,7 @@ install:
   - rustup toolchain install beta
   - rustup toolchain install nightly
   - ps: |
-      Function test() {
+      Function Test() {
         echo "Testing"
         rustup run stable cargo test $args 2>&1 | %{ "$_" }
         if ($LastExitCode -ne 0) { $host.SetShouldExit($LastExitCode)  }
@@ -39,11 +39,11 @@ build: false
 test_script:
   - cargo fmt -- --check
   - cargo clippy
-  - test
-  - test --features large-files
-  - test --no-default-features
-  - test --no-default-features --features large-files
-  - test --no-default-features --features fallback-buf
-  - test --no-default-features --features fallback-buf,large-files
-  - test --no-default-features --features fallback-bufreader
-  - test --no-default-features --features fallback-bufreader,large-files
+  - Test
+  - Test --features large-files
+  - Test --no-default-features
+  - Test --no-default-features --features large-files
+  - Test --no-default-features --features fallback-buf
+  - Test --no-default-features --features fallback-buf,large-files
+  - Test --no-default-features --features fallback-bufreader
+  - Test --no-default-features --features fallback-bufreader,large-files
