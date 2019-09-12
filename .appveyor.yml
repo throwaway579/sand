@@ -14,19 +14,22 @@ install:
   - rustup component add rustfmt
   - rustup component add clippy
   - rustup toolchain install beta
-  - rustup toolchain install nightly
+  #- rustup toolchain install nightly
   - ps: |
       Function Test() {
+        echo "Testing stable"
         rustup run stable cargo test $args 2> $null
         if ($LastExitCode -ne 0) { $host.SetShouldExit($LastExitCode)  }
         rustup run stable cargo test --release $args 2> $null
         if ($LastExitCode -ne 0) { $host.SetShouldExit($LastExitCode)  }
 
+        echo "Testing beta"
         rustup run beta cargo test $args 2> $null
         if ($LastExitCode -ne 0) { $host.SetShouldExit($LastExitCode)  }
         rustup run beta cargo test --release $args 2> $null
         if ($LastExitCode -ne 0) { $host.SetShouldExit($LastExitCode)  }
 
+        echo "Testing nightly"
         #rustup run nightly cargo test $args 2>&1 | Out-String
         #if ($LastExitCode -ne 0) { $host.SetShouldExit($LastExitCode)  }
         #rustup run nightly cargo test --release $args 2>&1 | Out-String
@@ -39,8 +42,8 @@ test_script:
   - cargo fmt -- --check
   - cargo clippy
   - ps: Test
-  - ps: Test --features large-files
-  - ps: Test --no-default-features
+  #- ps: Test --features large-files
+  #- ps: Test --no-default-features
   #- ps: Test --no-default-features --features large-files
   #- ps: Test --no-default-features --features fallback-buf
   #- ps: Test --no-default-features --features fallback-buf,large-files
