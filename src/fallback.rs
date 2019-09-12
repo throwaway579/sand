@@ -61,7 +61,7 @@ pub fn send_file_imp(file: &mut File, stream: &mut TcpStream, length: u64) -> io
 
 #[cfg(all(feature = "fallback-buf", feature = "large-files"))]
 pub fn send_file_imp(file: &mut File, stream: &mut TcpStream, length: u64) -> io::Result<()> {
-    let mut remaining =  length.checked_sub(usize::max_value() as u64).unwrap_or(0);
+    let mut remaining = length.checked_sub(usize::max_value() as u64).unwrap_or(0);
 
     let mut buf = Vec::with_capacity(length as usize);
 
