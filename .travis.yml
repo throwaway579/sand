@@ -29,25 +29,24 @@ install:
   - rustup toolchain install "nightly-$target"
   - function test() {
       echo "Testing stable";
-      rustup run stable cargo test "$@";
+      rustup run "stable-$target" cargo test "$@";
       echo "Testing stable --release";
-      rustup run stable cargo test --release "$@";
+      rustup run "stable-$target" cargo test --release "$@";
 
       echo "Testing beta";
-      rustup run beta cargo test "$@";
+      rustup run "beta-$target" cargo test "$@";
       echo "Testing beta --release";
-      rustup run beta cargo test --release "$@";
+      rustup run "beta-$target" cargo test --release "$@";
 
       echo "Testing stable";
-      rustup run nightly cargo test "$@";
+      rustup run "nightly-$target" cargo test "$@";
       echo "Testing nightly --release";
-      rustup run nightly cargo test --release "$@";
+      rustup run "nightly-$target" cargo test --release "$@";
     }
 
 script:
   - cargo fmt -- --check
   - cargo clippy
-  - rustup default "stable-$target"
   - test
   - test --features large-files
   - test --no-default-features
