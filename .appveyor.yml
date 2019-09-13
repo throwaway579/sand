@@ -8,7 +8,7 @@ environment:
     - target: i686-pc-windows-gnu
 
 install:
-  - appveyor DownloadFile https://win.rustup.rs/ -FileName rustup-init.exe
+  - appveyor-retry appveyor DownloadFile https://win.rustup.rs/ -FileName rustup-init.exe
   - rustup-init -y --default-host %target% --default-toolchain stable
   - set PATH=%PATH%;%USERPROFILE%\.cargo\bin
   - rustup component add rustfmt
@@ -32,11 +32,11 @@ install:
         if ($LastExitCode -ne 0) { $host.SetShouldExit($LastExitCode)  }
 
         echo "Testing nightly"
-        #rustup run nightly cargo test $args 2>&1 | Out-String
-        #if ($LastExitCode -ne 0) { $host.SetShouldExit($LastExitCode)  }
+        rustup run nightly cargo test $args $args 2> $null
+        if ($LastExitCode -ne 0) { $host.SetShouldExit($LastExitCode)  }
         echo "Testing nightly --release"
-        #rustup run nightly cargo test --release $args 2>&1 | Out-String
-        #if ($LastExitCode -ne 0) { $host.SetShouldExit($LastExitCode)  }
+        rustup run nightly cargo test --release $args $args 2> $null
+        if ($LastExitCode -ne 0) { $host.SetShouldExit($LastExitCode)  }
       }
 
 build: false

@@ -122,9 +122,9 @@ use std::net::TcpStream;
 /// # use std::fs::File;
 /// # use std::net::TcpStream;
 ///
-/// // somewhere in server code
-/// fn serve_static(mut file: File, mut stream: TcpStream) -> io::Result<()> {
-///     send_file(&mut file, &mut stream) // everything you need to do
+/// // somewhere in a server for static files
+/// fn serve_static(file: &mut File, stream: &mut TcpStream) -> io::Result<()> {
+///     send_file(file, stream)
 /// }
 /// ```
 ///

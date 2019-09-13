@@ -31,11 +31,20 @@ install:
       set -e
       target="$1";
       shift;
+
+      echo "Testing stable"
       rustup run "stable-$target" cargo test "$@";
+      echo "Testing stable --release"
       rustup run "stable-$target" cargo test --release "$@";
+
+      echo "Testing beta"
       rustup run "beta-$target" cargo test "$@";
+      echo "Testing beta --release"
       rustup run "beta-$target" cargo test --release "$@";
+
+      echo "Testing stable"
       rustup run "nightly-$target" cargo test "$@";
+      echo "Testing nightly --release"
       rustup run "nightly-$target" cargo test --release "$@";
     }
 

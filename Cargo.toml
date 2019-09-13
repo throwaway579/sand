@@ -9,7 +9,11 @@ readme = "README.md"
 documentation = "https://docs.rs/snedfile"
 description = "Cross-platform sendfile() abstractions"
 categories = ["api-bindings", "network-programming"]
-keywords = ["sendfile", "wrapper", "cross-platform", "system call"]
+keywords = ["sendfile", "cross-platform", "system call", "wrapper"]
+
+[badges]
+travis-ci = { repository = "Draphar/snedfile", branch = "master" }
+appveyor = { repository = "Draphar/snedfile", branch = "master", service = "github" }
 
 [dependencies]
 libc = "0.2"
